@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    div{
+      width: 200px;
+      height: 200px;
+      background: skyblue;
+    }
+  </style>
+</head>
+<body>
+  <div id="box">app</div>
+  <script>
+    //   获取时间对象
+    let getEvent=function(event){
+        // 标准浏览器返回event ie下返回 window.event
+      return event || window.event
+    }
+    // 获取DOM节点
+    let getTarget=function(event){
+      let events=getEvent(event)
+    //   标砖浏览器下返回event.target ie下返回 event.srcElement 
+      return events.target || events.srcElement
+    }
+    // 阻止默认事件
+    let preventDefault=function(event){
+      let events=getEvent(event)
+      if(events.preventDefault){//标准浏览器
+        events.preventDefault()
+      }else{//ie浏览器
+        events.returnValue=false
+      }
+    }
+    // 外观模式实现
+    function addEvent(dom,type,fn){
+      if(dom.addEventListener){//对于支持DOM2级的浏览器使用addEventListener
+        dom.addEventListener(type,fn,false)
+      }else if(dom.attachEvent){//不支持addEventListener的使用attachEvent
+        dom.attachEvent('on'+type,fn)
+      }else{//对于支持on+事件名的浏览器
+        dom['on'+type]=fn
+      }
+    }
+    box.onclick=function(e){
+      preventDefault(e)
+      if(getTarget(e)){
+        console.log(1);
+      }
+    }
+    // let box=document.getElementById('box')
+    // addEvent(box,'click',function(){
+    //   console.log('1');
+    // })
+    // addEvent(box,'click',function(){
+    //   console.log('2');
+    // })
+  </script>
+</body>
+</html>
