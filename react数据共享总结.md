@@ -11,13 +11,20 @@ active:对象
 返回状态文件：<!--count_active.js-->
 
 <!-- yarn add redux -->
+<!-- 1.1yarn add redux-thunk -->
 3.创建store
 <!-- 引入redux创建store方法 -->
-import {createStore} from  'redux'
+import {createStore,appleMiddleware,combineRdeucers} from  'redux'
 <!-- 引入改变状态文件 -->
+import thunk from 'redux-thunk'
 import countReducer from  './count_reducer.js' <!--这里引入默认暴露的文件--->
+<!-- 多个reducer时合并 -->
+const allReducers=combineRdeucers({
+    count:countReducer,
+    ...
+})
 <!-- 创建并暴露store -->
-export default createStore(countReducer)
+export default createStore(countReducer,appleMiddleware(thunk))
 
 3.1.常量文件的编写
 <!-- 导出常量 -->
@@ -44,7 +51,12 @@ export const decreMent=(data)=>({type:DECREMENT,data})
 export const increMentIfAdd=(data)=>({type:INCREMENTIFADD,data})
 
 export const incrementAsyncAdd=(data)=>({type:INCREMENTASYNCADD,data})
-
+<!-- 异步 -->
+export const appasync=(data)=>{
+    return (dispath)=>{
+        dispath('要操作的函数(data)')
+    }
+}
 
 
 
@@ -91,20 +103,6 @@ let value=2
 store.dispatch(increment(value))
 
 
-异步store
-1.1yarn add redux-thunk
-1.2配置到store中
-<!-- import {createStore ,appleMiddleware} from 'redux' -->
-<!-- import thunk from 'redux-thunk' -->
-<!-- import countReducer from './countReducer.js -->
-<!-- 允许使用异步   接到异步操作就不走reducer等待异步读秒结束 然后store通知reducer执行相应的操作会给异步函数传入dispatch函数 -->
-<!-- export default createStore(countReducer,appleMiddleware(thunk)) -->
-export const appasync=(data)=>{
-    return (dispath)=>{
-        dispath('要操作的函数(data)')
-    }
-}
-
 7.dispatch后数据不改变问题
 <!-- 原因：dispatch后数据改变Lee但页面没有渲染出来是因为react不知道
 数据发生了改变  所以这里要通知react发生了改变
@@ -148,7 +146,7 @@ Class CountUI extends Component{
 }
 
 <!-- 映射状态 -->
-const mapStateToProps=(state)=>({count:state})
+const mapStateToProps=(state)=>({count:state.count})
 
 <!-- 映射dispatch方法 -->
 const mapDispatchToProps=(dispatch)=>({
